@@ -1,11 +1,10 @@
-from datetime import date
 from io import StringIO
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import call, patch
 
 from django.test import TestCase
 
-from jarbas.core.management.commands.reimbursements import Command
-from jarbas.core.models import Reimbursement
+from jarbas.chamber_of_deputies.management.commands.reimbursements import Command
+from jarbas.chamber_of_deputies.models import Reimbursement
 
 
 class TestCommand(TestCase):
@@ -17,8 +16,8 @@ class TestCommand(TestCase):
 class TestCreate(TestCommand):
 
     @patch.object(Command, 'print_count')
-    @patch('jarbas.core.management.commands.reimbursements.print')
-    @patch('jarbas.core.management.commands.reimbursements.create_or_update_reimbursement')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.print')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.create_or_update_reimbursement')
     def test_create_or_update(self, create, print_, print_count):
         reimbursements = (
             dict(ahoy=42, document_id=1),
@@ -40,9 +39,9 @@ class TestMarkNonUpdated(TestCommand):
 
 class TestConventionMethods(TestCommand):
 
-    @patch('jarbas.core.management.commands.reimbursements.Command.reimbursements')
-    @patch('jarbas.core.management.commands.reimbursements.Command.create_or_update')
-    @patch('jarbas.core.management.commands.reimbursements.Command.mark_not_updated_reimbursements')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.reimbursements')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.create_or_update')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.mark_not_updated_reimbursements')
     def test_handler_without_options(self, mark, create, reimbursements):
         reimbursements.return_value = (1, 2, 3)
         self.command.handle(dataset='reimbursements.xz')
@@ -50,10 +49,10 @@ class TestConventionMethods(TestCommand):
         self.assertEqual('reimbursements.xz', self.command.path)
         mark.assert_called_once_with()
 
-    @patch('jarbas.core.management.commands.reimbursements.Command.reimbursements')
-    @patch('jarbas.core.management.commands.reimbursements.Command.create_or_update')
-    @patch('jarbas.core.management.commands.reimbursements.Command.drop_all')
-    @patch('jarbas.core.management.commands.reimbursements.Command.mark_not_updated_reimbursements')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.reimbursements')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.create_or_update')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.drop_all')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.Command.mark_not_updated_reimbursements')
     def test_handler_with_options(self, mark, drop_all, create, reimbursements):
         self.command.handle(dataset='reimbursements.xz', drop=True)
         drop_all.assert_called_once_with(Reimbursement)
@@ -63,8 +62,8 @@ class TestConventionMethods(TestCommand):
 
 class TestFileLoader(TestCommand):
 
-    @patch('jarbas.core.management.commands.reimbursements.lzma')
-    @patch('jarbas.core.management.commands.reimbursements.csv.DictReader')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.lzma')
+    @patch('jarbas.chamber_of_deputies.management.commands.reimbursements.csv.DictReader')
     def test_reimbursement_property(self, row, lzma):
         lzma.return_value = StringIO()
         row.return_value = dict(ahoy=42)
